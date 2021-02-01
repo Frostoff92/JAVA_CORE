@@ -10,9 +10,11 @@ public class Converter extends JFrame {
     private final JRadioButton jRBin;
     private final JRadioButton jROct;
     private final JRadioButton jRHex;
+    private final JRadioButton jREmi;
     private final JTextField jTFBin;
     private final JTextField jTFOct;
     private final JTextField jTFHex;
+    private final JTextField jTFEmi;
     long num;
 
     public Converter()  {
@@ -63,6 +65,13 @@ public class Converter extends JFrame {
         jRHex.setBounds(10,180,80,50);
         getContentPane().add(jRHex);
         jRHex.addActionListener(e -> convertNum());
+
+        jREmi = new JRadioButton("EMI");
+        jREmi.setHorizontalAlignment(SwingConstants.LEFT);
+        jREmi.setText("EMI");
+        jREmi.setBounds(10,210,80,50);
+        getContentPane().add(jREmi);
+        jREmi.addActionListener(e -> convertNum());
         // Поле, где будет отражено число в 2-ичной системе
         jTFBin = new JTextField();
         jTFBin.setBounds(100,135,200,20);
@@ -81,6 +90,12 @@ public class Converter extends JFrame {
         jTFHex.setHorizontalAlignment(SwingConstants.CENTER);
         jTFHex.setColumns(20);
         getContentPane().add(jTFHex);
+
+        jTFEmi = new JTextField();
+        jTFEmi.setBounds(100,225,200,20);
+        jTFEmi.setHorizontalAlignment(SwingConstants.CENTER);
+        jTFEmi.setColumns(20);
+        getContentPane().add(jTFEmi);
         // При нажатии на кнопку очищаем поля
         JButton btnClear = new JButton("Clear");
         btnClear.setBounds(270, 37, 80, 20);
@@ -89,6 +104,7 @@ public class Converter extends JFrame {
             jTFBin.setText(null);
             jTFOct.setText(null);
             jTFHex.setText(null);
+            jTFEmi.setText(null);
         });
         getContentPane().add(btnClear);
 
@@ -96,18 +112,37 @@ public class Converter extends JFrame {
     // Для оптимизации кода описываем метод, при вызове которого число будет конвертировано в
     // в систему выбранную Пользователем
     public void convertNum() {
-        String numText = jTF.getText();
-        long number = Long.parseUnsignedLong(numText);
-        if (jRBin.isSelected()) {
-            numText = Long.toBinaryString(number);
-            jTFBin.setText(numText);
-        } else if (jROct.isSelected()) {
-            numText = Long.toOctalString(number);
-            jTFOct.setText(numText);
-        } else jRHex.isSelected();
-            numText = Long.toHexString(number).toUpperCase();
-            jTFHex.setText(numText);
-        }
+      try {
+            String numText = jTF.getText();
+
+            long number = Long.parseUnsignedLong(numText);
+            if (jRBin.isSelected()) {
+                numText = Long.toBinaryString(number);
+                jTFBin.setText(numText);
+            } else if (jROct.isSelected()) {
+                numText = Long.toOctalString(number);
+                jTFOct.setText(numText);
+            } else if (jRHex.isSelected()) {
+                numText = Long.toHexString(number).toUpperCase();
+                jTFHex.setText(numText);
+            } else jREmi.isSelected();
+                cutHex();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "This field is empty! Please input number!");
+      }
+    }
+
+    public void cutHex()    {
+        String numEmi = jTFHex.getText();
+        int start = 9;
+        int end = 16;
+        char[] c = new char[end - start];
+        numEmi.getChars(9,16,c,0);
+        long numDec = Long.parseUnsignedLong(String.valueOf(c), 16);
+        jTFEmi.setText(String.valueOf(numDec));
+    }
+
+
     // Параметры окна
     public static void main(String[] args) {
         Converter conv = new Converter();
